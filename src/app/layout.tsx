@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 
 import '@/styles/globals.css';
 import Navbar from '@/components/Navbar';
+import { Toaster } from '@/components/ui/Toaster';
 
 export const metadata = {
     title: 'Reddit Clone',
@@ -31,6 +32,8 @@ export default function RootLayout({
                 <div className="container max-w-screen-xl mx-auto h-full pt-12">
                     {children}
                 </div>
+
+                <Toaster />
             </body>
         </html>
     );
