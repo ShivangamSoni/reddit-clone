@@ -15,7 +15,9 @@ export default function UserAuthForm() {
         setIsLoading(true);
 
         try {
-            await signIn('google');
+            await signIn('google', {
+                callbackUrl: '/',
+            });
         } catch (err) {
             toast({
                 title: 'There was a problem.',

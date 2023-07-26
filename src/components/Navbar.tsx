@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getAuthSession } from '@/lib/auth';
 
 import Icons from './Icons';
+import UserActionBar from './UserActionBar';
 import { buttonVariants } from './ui/Button';
 
 export default async function Navbar() {
@@ -21,9 +22,13 @@ export default async function Navbar() {
                 {/* Search Bar */}
                 <div className="w-1/5 outline text-center">Search Bar</div>
 
-                <Link href="/sign-in" className={buttonVariants()}>
-                    Sign In
-                </Link>
+                {session?.user ? (
+                    <UserActionBar user={session.user} />
+                ) : (
+                    <Link href="/sign-in" className={buttonVariants()}>
+                        Sign In
+                    </Link>
+                )}
             </div>
         </header>
     );

@@ -1,6 +1,7 @@
-import { LucideProps } from 'lucide-react';
+import { LucideProps, User } from 'lucide-react';
 
 const Icons = {
+    user: User,
     logo: (props: LucideProps) => (
         <svg
             {...props}
