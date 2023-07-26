@@ -16,8 +16,10 @@ const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({
     children,
+    authModal,
 }: {
     children: React.ReactNode;
+    authModal: React.ReactNode;
 }) {
     return (
         <html
@@ -28,10 +30,14 @@ export default function RootLayout({
             )}
         >
             <body className="min-h-screen p-12 bg-slate-50">
+                {/* @ts-expect-error Async Server Component */}
                 <Navbar />
+
                 <div className="container max-w-screen-xl mx-auto h-full pt-12">
                     {children}
                 </div>
+
+                {authModal}
 
                 <Toaster />
             </body>
