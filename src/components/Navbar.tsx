@@ -1,9 +1,13 @@
 import Link from 'next/link';
 
+import { getAuthSession } from '@/lib/auth';
+
 import Icons from './Icons';
 import { buttonVariants } from './ui/Button';
 
-export default function Navbar() {
+export default async function Navbar() {
+    const session = await getAuthSession();
+
     return (
         <header className="fixed top-0 inset-x-0 bg-zinc-100 border-b border-zinc-300 z-10 py-2">
             <div className="container flex items-center justify-between gap-2">
