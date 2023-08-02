@@ -11,6 +11,7 @@ datasource db {
   relationMode = "prisma"
 }
 
+// Auth Models
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -28,6 +29,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -36,6 +38,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model User {
@@ -45,7 +49,109 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
 
-  image    String?
-  accounts Account[]
-  sessions Session[]
+  image             String?
+  accounts          Account[]
+  sessions          Session[]
+  Post              Post[]
+  Comment           Comment[]
+  CommentVote       CommentVote[]
+  Vote              Vote[]
+  createdSubreddits Subreddit[]    @relation("Created By")
+  Subreddit         Subreddit[]
+  Subscription      Subscription[]
+}
+
+// App Models
+model Subreddit {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts Post[]
+
+  creatorId String?
+  creator   User?   @relation("Created By", fields: [creatorId], references: [id])
+
+  subscribers Subscription[]
+  User        User?          @relation(fields: [userId], references: [id])
+  userId      String?
+
+  @@index([name])
+}
+
+model Subscription {
+  subredditId String
+  Subreddit   Subreddit @relation(fields: [subredditId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@id([userId, subredditId])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subredditId String
+  subreddit   Subreddit @relation(fields: [subredditId], references: [id])
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  comments Comment[]
+  votes    Vote[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+
+  replyToId String?
+  replyTo   Comment?  @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies   Comment[] @relation("ReplyTo")
+
+  commentId String?
+  votes     CommentVote[]
+}
+
+enum VoteType {
+  up
+  down
+}
+
+model Vote {
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  type VoteType
+
+  @@id([userId, postId])
+}
+
+model CommentVote {
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id])
+
+  type VoteType
+
+  @@id([userId, commentId])
 }
