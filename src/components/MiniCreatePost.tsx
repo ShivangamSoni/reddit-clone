@@ -15,6 +15,8 @@ export default function MiniCreatePost({ session }: Props) {
     const router = useRouter();
     const pathname = usePathname();
 
+    const createPost = () => router.push(pathname + "/submit");
+
     return (
         <li className="overflow-hidden rounded-md bg-white shadow">
             <div className="h-full px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-6">
@@ -33,23 +35,15 @@ export default function MiniCreatePost({ session }: Props) {
                     <Input
                         readOnly
                         placeholder="Create Post"
-                        onClick={() => router.push(pathname + "/submit")}
+                        onClick={createPost}
                     />
 
                     <div className="flex justify-between items-center gap-1 sm:gap-6">
-                        <Button
-                            variant="ghost"
-                            size="xs"
-                            onClick={() => router.push(pathname + "/submit")}
-                        >
+                        <Button variant="ghost" size="xs" onClick={createPost}>
                             <ImageIcon className="text-zinc-600" />
                         </Button>
 
-                        <Button
-                            variant="ghost"
-                            size="xs"
-                            onClick={() => router.push(pathname + "/submit")}
-                        >
+                        <Button variant="ghost" size="xs" onClick={createPost}>
                             <Link2 className="text-zinc-600" />
                         </Button>
                     </div>
