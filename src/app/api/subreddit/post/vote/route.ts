@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { redis } from "@/lib/redis";
 import { PostVoteValidator } from "@/lib/validators/votes";
 import { CachePost } from "@/types/redis";
-import { Post, User, Vote, VoteType } from "@prisma/client";
+import { Post, User, Vote } from "@prisma/client";
 import { z } from "zod";
 
 const CACHE_AFTER_UPVOTES = 1;
@@ -77,7 +77,7 @@ export async function PATCH(req: Request) {
             });
         }
 
-        await redisCachePost({ post, voteType });
+        await redisCachePost({ post });
         return new Response("OK", { status: 200 });
     } catch (err) {
         if (err instanceof z.ZodError) {
@@ -92,13 +92,11 @@ export async function PATCH(req: Request) {
 
 async function redisCachePost({
     post,
-    voteType,
 }: {
     post: Post & {
         author: User;
         votes: Vote[];
     };
-    voteType: VoteType;
 }) {
     // Recount the votes
     const votesAmt = post.votes.reduce((acc, vote) => {
@@ -114,7 +112,6 @@ async function redisCachePost({
             id: post.id,
             title: post.title,
             content: JSON.stringify(post.content),
-            currentVote: voteType,
             createdAt: post.createdAt,
         };
 
