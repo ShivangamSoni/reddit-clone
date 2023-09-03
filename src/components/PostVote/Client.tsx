@@ -38,12 +38,6 @@ export default function PostVoteClient({
             await axios.patch("/api/subreddit/post/vote", payload);
         },
         onError(err, voteType) {
-            if (err instanceof AxiosError) {
-                if (err.response?.status === 401) {
-                    return loginToast();
-                }
-            }
-
             if (voteType === "up") {
                 setVotesAmt((prev) => prev - 1);
             } else {
@@ -51,6 +45,12 @@ export default function PostVoteClient({
             }
 
             setCurrentVote(previousVote);
+
+            if (err instanceof AxiosError) {
+                if (err.response?.status === 401) {
+                    return loginToast();
+                }
+            }
 
             return toast({
                 title: "Something Went Wrong",
