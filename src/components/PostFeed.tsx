@@ -3,7 +3,7 @@
 import { useIntersection } from "@mantine/hooks";
 
 import { ExtendedPost } from "@/types/db";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "@/config";
 import axios from "axios";
@@ -17,7 +17,7 @@ import PostVoteClient from "./PostVote/Client";
 
 interface Props {
     initialPosts: ExtendedPost[];
-    subredditName: string;
+    subredditName?: string;
 }
 
 export default function PostFeed({ subredditName, initialPosts }: Props) {
@@ -27,9 +27,9 @@ export default function PostFeed({ subredditName, initialPosts }: Props) {
         threshold: 1,
     });
 
-    const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
-        queryKey: ["infinite-feed", subredditName],
-        async queryFn({ pageParam = 1 }) {
+    const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery(
+        ["infinite-feed", subredditName ?? "general"],
+        async ({ pageParam = 1 }) => {
             const query =
                 `/api/posts?limit=${INFINITE_SCROLLING_PAGINATION_RESULTS}&page=${pageParam}` +
                 (!!subredditName ? `&subredditName=${subredditName}` : "");
@@ -37,34 +37,40 @@ export default function PostFeed({ subredditName, initialPosts }: Props) {
             const { data } = await axios.get(query);
             return data as ExtendedPost[];
         },
-        getNextPageParam(_, pages) {
-            return pages.length + 1;
-        },
-        initialData: { pages: [initialPosts], pageParams: [1] },
-    });
+        {
+            getNextPageParam(_, pages) {
+                return pages.length + 1;
+            },
+            initialData: { pages: [initialPosts], pageParams: [1] },
+        }
+    );
 
     const posts = data?.pages.flatMap((page) => page) ?? initialPosts;
 
+    useEffect(() => {
+        if (entry?.isIntersecting) {
+            fetchNextPage();
+        }
+    }, [entry, fetchNextPage]);
+
     return (
         <ul className="flex flex-col col-span-2 space-y-6">
-            {posts.map((post, idx) => (
-                <PostItem
-                    key={post.id}
-                    post={post}
-                    ref={idx === posts.length - 1 ? ref : undefined}
-                />
-            ))}
+            {posts.map((post, idx) =>
+                idx === posts.length - 1 ? (
+                    <li key={post.id} ref={ref}>
+                        <PostItem post={post} />
+                    </li>
+                ) : (
+                    <li key={post.id}>
+                        <PostItem post={post} />
+                    </li>
+                )
+            )}
         </ul>
     );
 }
 
-function PostItem({
-    post,
-    ref,
-}: {
-    post: ExtendedPost;
-    ref?: (element: HTMLElement | null) => void;
-}) {
+function PostItem({ post }: { post: ExtendedPost }) {
     const contentRef = useRef<HTMLDivElement | null>(null);
     const { data: session } = useSession();
 
@@ -81,7 +87,7 @@ function PostItem({
     );
 
     return (
-        <li ref={ref} className="rounded-md bg-white shadow">
+        <div className="rounded-md bg-white shadow">
             <div className="px-5 py-4 flex justify-between">
                 <PostVoteClient
                     initialVotesAmt={votesAmt}
@@ -103,7 +109,12 @@ function PostItem({
                         </span>
 
                         <span className="inline-block pl-2">
-                            Posted: {formatTimeToNow(post.createdAt)}
+                            Posted:{" "}
+                            {formatTimeToNow(
+                                typeof post.createdAt === "string"
+                                    ? new Date(post.createdAt)
+                                    : post.createdAt
+                            )}
                         </span>
                     </div>
 
@@ -133,6 +144,6 @@ function PostItem({
                     <MessageSquare className="h-4 w-4" /> {commentAmnt} Comments
                 </Link>
             </div>
-        </li>
+        </div>
     );
 }

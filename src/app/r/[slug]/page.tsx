@@ -28,9 +28,12 @@ export default async function SubredditSlugPage({
                     comments: true,
                     subreddit: true,
                 },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                take: INFINITE_SCROLLING_PAGINATION_RESULTS,
             },
         },
-        take: INFINITE_SCROLLING_PAGINATION_RESULTS,
     });
 
     if (!subreddit) {

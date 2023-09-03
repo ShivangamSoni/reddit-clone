@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/Button";
 import { ArrowBigDown, ArrowBigUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { PostVoteRequest } from "@/lib/validators/votes";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/hooks/useToast";
