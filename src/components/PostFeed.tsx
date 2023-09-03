@@ -13,6 +13,7 @@ import Link from "next/link";
 import { formatTimeToNow } from "@/lib/utils";
 import { MessageSquare } from "lucide-react";
 import EditorOutput from "./EditorOutput";
+import PostVoteClient from "./PostVote/Client";
 
 interface Props {
     initialPosts: ExtendedPost[];
@@ -67,7 +68,7 @@ function PostItem({
     const contentRef = useRef<HTMLDivElement | null>(null);
     const { data: session } = useSession();
 
-    const voteAmnt = post.votes.reduce((acc, vote) => {
+    const votesAmt = post.votes.reduce((acc, vote) => {
         if (vote.type === "up") return acc + 1;
         if (vote.type === "down") return acc - 1;
         return acc;
@@ -82,7 +83,11 @@ function PostItem({
     return (
         <li ref={ref} className="rounded-md bg-white shadow">
             <div className="px-5 py-4 flex justify-between">
-                {/* TODO: Post Votes */}
+                <PostVoteClient
+                    initialVotesAmt={votesAmt}
+                    initialVote={currentVote?.type}
+                    postId={post.id}
+                />
 
                 <div className="w-0 flex-1">
                     <div className="max-h-40 mt-1 text-xs text-gray-500 divide-x space-x-2">
