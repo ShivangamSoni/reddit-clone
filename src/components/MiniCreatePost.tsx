@@ -18,7 +18,7 @@ export default function MiniCreatePost({ session }: Props) {
     const createPost = () => router.push(pathname + "/submit");
 
     return (
-        <li className="overflow-hidden rounded-md bg-white shadow">
+        <div className="overflow-hidden rounded-md bg-white shadow">
             <div className="h-full px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-6">
                 <div className="relative">
                     <UserAvatar
@@ -49,6 +49,6 @@ export default function MiniCreatePost({ session }: Props) {
                     </div>
                 </div>
             </div>
-        </li>
+        </div>
     );
 }
