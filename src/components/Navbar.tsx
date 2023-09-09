@@ -1,10 +1,11 @@
-import Link from 'next/link';
+import Link from "next/link";
 
-import { getAuthSession } from '@/lib/auth';
+import { getAuthSession } from "@/lib/auth";
 
-import Icons from './Icons';
-import UserActionBar from './UserActionBar';
-import { buttonVariants } from './ui/Button';
+import Icons from "./Icons";
+import UserActionBar from "./UserActionBar";
+import { buttonVariants } from "./ui/Button";
+import SearchBar from "./SearchBar";
 
 export default async function Navbar() {
     const session = await getAuthSession();
@@ -19,8 +20,7 @@ export default async function Navbar() {
                     </h1>
                 </Link>
 
-                {/* Search Bar */}
-                <div className="w-1/5 outline text-center">Search Bar</div>
+                <SearchBar />
 
                 {session?.user ? (
                     <UserActionBar user={session.user} />
