@@ -1,12 +1,16 @@
-import { User } from 'next-auth';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/Avatar';
-import Icons from './Icons';
+import { User } from "next-auth";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/Avatar";
+import Icons from "./Icons";
 
 interface Props {
-    user: Pick<User, 'name' | 'image'>;
+    user: Pick<User, "name" | "image">;
+    className?: string;
 }
 
-export default function UserAvatar({ user: { name, image } }: Props) {
+export default function UserAvatar({
+    user: { name, image },
+    className,
+}: Props) {
     return (
         <Avatar>
             <span className="sr-only">{name}</span>
@@ -14,7 +18,7 @@ export default function UserAvatar({ user: { name, image } }: Props) {
                 <AvatarImage src={image!} referrerPolicy="no-referrer" />
             ) : (
                 <AvatarFallback>
-                    <Icons.user className="h-10 w-10" />
+                    <Icons.user className={className || `h-10 w-10`} />
                 </AvatarFallback>
             )}
         </Avatar>
