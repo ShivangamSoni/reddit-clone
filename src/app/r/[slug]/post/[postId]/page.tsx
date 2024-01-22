@@ -22,7 +22,8 @@ export default async function page({
         postId: string;
     };
 }) {
-    const cachedPost = (await redis.hgetall(`post:${postId}`)) as CachePost;
+    // const cachedPost = (await redis.hgetall(`post:${postId}`)) as CachePost;
+    const cachedPost = null;
 
     let post: (Post & { votes: Vote[]; author: User }) | null = null;
 
@@ -46,7 +47,7 @@ export default async function page({
                 <Suspense fallback={<PostVoteShell />}>
                     {/* @ts-expect-error Async Server Component */}
                     <PostVoteServer
-                        postId={post?.id ?? cachedPost.id}
+                        postId={post!.id /*?? cachedPost.id*/}
                         getData={async () => {
                             return await db.post.findUnique({
                                 where: {
@@ -65,23 +66,29 @@ export default async function page({
                         <p className="max-h-40 mt-1 truncate text-xs text-gray-500 divide-x space-x-2">
                             <span>
                                 Posted by u/
-                                {post?.author.username ??
-                                    cachedPost.authorUserName}
+                                {
+                                    post!.author.username /*??
+                                    cachedPost.authorUserName*/
+                                }
                             </span>
                             <span className="inline-block pl-2">
                                 {formatTimeToNow(
                                     new Date(
-                                        post?.createdAt ?? cachedPost.createdAt
+                                        post!.createdAt /*?? cachedPost.createdAt*/
                                     )
                                 )}
                             </span>
                         </p>
                         <h1 className="text-xl font-semibold py-2 leading-6 text-gray-900">
-                            {post?.title ?? cachedPost.title}
+                            {post!.title /* ?? cachedPost.title*/}
                         </h1>
                     </div>
                     <EditorOutput
-                        content={post?.content ?? cachedPost.content}
+                        content={
+                            post?.content ??
+                            // @ts-expect-error
+                            cachedPost.content.blocks
+                        }
                     />
 
                     <Suspense
