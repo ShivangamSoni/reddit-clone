@@ -85,9 +85,8 @@ export default async function page({
                     </div>
                     <EditorOutput
                         content={
-                            post?.content ??
-                            // @ts-expect-error
-                            cachedPost.content.blocks
+                            post!.content /* ??
+                            cachedPost.content.blocks */
                         }
                     />
 
@@ -97,7 +96,9 @@ export default async function page({
                         }
                     >
                         {/* @ts-expect-error Server Component */}
-                        <CommentsSection postId={post?.id ?? cachedPost.id} />
+                        <CommentsSection
+                            postId={post!.id /* ?? cachedPost.id */}
+                        />
                     </Suspense>
                 </div>
             </div>
